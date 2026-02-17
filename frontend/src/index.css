@@ -85,6 +85,9 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
   }
+   body[data-scroll-locked] {
+    overflow: visible !important;
+  }
 }
 
 @layer utilities {

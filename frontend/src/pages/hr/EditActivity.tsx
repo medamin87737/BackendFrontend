@@ -9,7 +9,7 @@ export default function EditActivity() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { users } = useData();
+  const { users, updateActivity } = useData();
 
   const managers = users.filter(u => u.role === 'MANAGER');
 
@@ -24,7 +24,7 @@ export default function EditActivity() {
   });
 
   const [skills, setSkills] = useState<RequiredSkill[]>([
-    { skill_name: '', type: 'know_how', desired_level: 'medium', weight: 0.5 }
+    { skill_name: '', desired_level: 'medium' }
   ]);
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -56,12 +56,10 @@ export default function EditActivity() {
         });
 
         setSkills(
-          data.requiredSkills?.map((s: string) => ({
-            skill_name: s,
-            type: 'know_how',
-            desired_level: 'medium',
-            weight: 0.5
-          })) || [{ skill_name: '', type: 'know_how', desired_level: 'medium', weight: 0.5 }]
+          data.requiredSkills?.map((s: any) => ({
+            skill_name: s.skill_name,
+            desired_level: s.desired_level ?? 'medium',
+          })) || [{ skill_name: '', desired_level: 'medium' }]
         );
       })
       .catch(err => {
@@ -70,7 +68,7 @@ export default function EditActivity() {
       });
   }, [id]);
 
-  const addSkill = () => setSkills([...skills, { skill_name: '', type: 'know_how', desired_level: 'medium', weight: 0.3 }]);
+  const addSkill = () => setSkills([...skills, { skill_name: '', desired_level: 'medium' }]);
   const removeSkill = (i: number) => setSkills(skills.filter((_, idx) => idx !== i));
   const updateSkill = (i: number, updates: Partial<RequiredSkill>) =>
     setSkills(skills.map((s, idx) => idx === i ? { ...s, ...updates } : s));
@@ -107,7 +105,12 @@ export default function EditActivity() {
         departmentId: form.departmentId,
         startDate: new Date(form.startDate),
         endDate: new Date(form.endDate),
-        requiredSkills: skills.filter(s => s.skill_name).map(s => s.skill_name),
+        requiredSkills: skills
+          .filter(s => s.skill_name)
+          .map(s => ({
+            skill_name: s.skill_name,
+            desired_level: s.desired_level,
+          })),
       };
 
       const response = await fetch(`http://localhost:3000/activities/${id}`, {
@@ -120,6 +123,28 @@ export default function EditActivity() {
         const data = await response.json();
         throw new Error(data.message || 'Erreur lors de la mise à jour de l’activité');
       }
+
+      const updated = await response.json();
+      updateActivity({
+        id: updated?._id ?? updated?.id ?? id,
+        title: updated?.title ?? payload.title,
+        description: updated?.description ?? payload.description,
+        type: updated?.type ?? 'training',
+        required_skills: (updated?.requiredSkills ?? payload.requiredSkills ?? []).map((s: any) => ({
+          skill_name: s.skill_name,
+          desired_level: s.desired_level ?? 'medium',
+        })),
+        seats: updated?.maxParticipants ?? payload.maxParticipants,
+        date: updated?.startDate ? new Date(updated.startDate).toISOString() : new Date(payload.startDate).toISOString(),
+        duration: 'N/A',
+        location: 'N/A',
+        priority: 'consolidate_medium',
+        status: 'open',
+        created_by: user?.name ?? 'HR',
+        assigned_manager: undefined,
+        created_at: updated?.createdAt ?? new Date().toISOString(),
+        updated_at: updated?.updatedAt ?? new Date().toISOString(),
+      });
 
       alert('Activité mise à jour avec succès !');
       navigate('/hr/activities');

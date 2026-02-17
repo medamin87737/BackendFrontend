@@ -8,7 +8,7 @@ import type { RequiredSkill } from '../../types';
 export default function CreateActivity() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { users } = useData();
+  const { users, addActivity } = useData();
 
   const managers = users.filter(u => u.role === 'MANAGER');
 
@@ -30,15 +30,16 @@ export default function CreateActivity() {
     departmentId: '',
     startDate: '',
     endDate: '',
+    type: 'training',
   });
 
   const [skills, setSkills] = useState<RequiredSkill[]>([
-    { skill_name: '', type: 'know_how', desired_level: 'medium', weight: 0.5 }
+    { skill_name: '', desired_level: 'medium' }
   ]);
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  const addSkill = () => setSkills([...skills, { skill_name: '', type: 'know_how', desired_level: 'medium', weight: 0.3 }]);
+  const addSkill = () => setSkills([...skills, { skill_name: '', desired_level: 'medium' }]);
   const removeSkill = (i: number) => setSkills(skills.filter((_, idx) => idx !== i));
   const updateSkill = (i: number, updates: Partial<RequiredSkill>) =>
     setSkills(skills.map((s, idx) => idx === i ? { ...s, ...updates } : s));
@@ -100,13 +101,17 @@ export default function CreateActivity() {
       const payload = {
         title: form.title,
         description: form.description,
+        type: form.type,
         maxParticipants: form.maxParticipants,
         departmentId: form.departmentId,
         startDate: new Date(form.startDate),
         endDate: new Date(form.endDate),
         requiredSkills: skills
           .filter(s => s.skill_name)
-          .map(s => s.skill_name),
+          .map(s => ({
+            skill_name: s.skill_name,
+            desired_level: s.desired_level,
+          })),
       };
 
       console.log('Payload à envoyer :', payload);
@@ -121,6 +126,28 @@ export default function CreateActivity() {
         const data = await response.json();
         throw new Error(data.message || 'Erreur lors de la création de l’activité');
       }
+
+      const created = await response.json();
+      addActivity({
+        id: created?._id ?? created?.id ?? crypto.randomUUID(),
+        title: created?.title ?? payload.title,
+        description: created?.description ?? payload.description,
+        type: created?.type ?? payload.type,
+        required_skills: (created?.requiredSkills ?? payload.requiredSkills ?? []).map((s: any) => ({
+          skill_name: s.skill_name,
+          desired_level: s.desired_level ?? 'medium',
+        })),
+        seats: created?.maxParticipants ?? payload.maxParticipants,
+        date: created?.startDate ? new Date(created.startDate).toISOString() : new Date(payload.startDate).toISOString(),
+        duration: 'N/A',
+        location: 'N/A',
+        priority: 'consolidate_medium',
+        status: 'open',
+        created_by: user?.name ?? 'HR',
+        assigned_manager: undefined,
+        created_at: created?.createdAt ?? new Date().toISOString(),
+        updated_at: created?.updatedAt ?? new Date().toISOString(),
+      });
 
       alert('Activité créée avec succès !');
       navigate('/hr/activities');
@@ -170,6 +197,19 @@ export default function CreateActivity() {
                 placeholder="Décrivez l'activité en détail..."
               />
               {errors.description && <span className="text-red-500 text-xs">{errors.description}</span>}
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label>Type</label>
+              <select
+                value={form.type}
+                onChange={e => setForm({ ...form, type: e.target.value })}
+                className="h-10 rounded-lg border px-3"
+              >
+                <option value="training">Formation</option>
+                <option value="certification">Certification</option>
+                <option value="mission">Mission</option>
+              </select>
             </div>
 
             <div className="flex flex-col gap-1.5">
@@ -248,6 +288,19 @@ export default function CreateActivity() {
                     className="h-9 rounded-lg border px-3"
                   />
                   {errors[`skill_${i}`] && <span className="text-red-500 text-xs">{errors[`skill_${i}`]}</span>}
+                </div>
+                <div className="flex flex-col gap-1 min-w-[140px]">
+                  <label>Niveau</label>
+                  <select
+                    value={skill.desired_level}
+                    onChange={e => updateSkill(i, { desired_level: e.target.value as any })}
+                    className="h-9 rounded-lg border px-3"
+                  >
+                    <option value="low">Bas</option>
+                    <option value="medium">Moyen</option>
+                    <option value="high">Élevé</option>
+                    <option value="expert">Expert</option>
+                  </select>
                 </div>
                 {skills.length > 1 && (
                   <button type="button" onClick={() => removeSkill(i)} className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-destructive/10">

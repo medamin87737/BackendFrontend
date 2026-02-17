@@ -12,10 +12,24 @@ export class Activity {
   description: string;
 
   @Prop({ required: true })
+  type: string;
+
+  @Prop({ required: true })
   departmentId: string;
 
-  @Prop({ type: [String], default: [] })
-  requiredSkills: string[];
+  @Prop({
+    type: [
+      {
+        skill_name: String,
+        desired_level: String,
+      },
+    ],
+    default: [],
+  })
+  requiredSkills: {
+    skill_name: string;
+    desired_level: string;
+  }[];
 
   @Prop({ required: true })
   maxParticipants: number;

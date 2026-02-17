@@ -14,7 +14,12 @@ interface DataTableProps<T> {
   emptyMessage?: string
 }
 
-export default function DataTable<T extends { id: string }>({ columns, data, onRowClick, emptyMessage = 'Aucune donnee' }: DataTableProps<T>) {
+export default function DataTable<T extends { id: string }>({
+  columns,
+  data,
+  onRowClick,
+  emptyMessage = 'Aucune donnee'
+}: DataTableProps<T>) {
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-card">
       <div className="overflow-x-auto">
@@ -22,7 +27,13 @@ export default function DataTable<T extends { id: string }>({ columns, data, onR
           <thead>
             <tr className="border-b border-border bg-muted/50">
               {columns.map((col) => (
-                <th key={col.key} className={cn('px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground', col.className)}>
+                <th
+                  key={col.key}
+                  className={cn(
+                    'px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground',
+                    col.className
+                  )}
+                >
                   {col.header}
                 </th>
               ))}
@@ -31,7 +42,10 @@ export default function DataTable<T extends { id: string }>({ columns, data, onR
           <tbody className="divide-y divide-border">
             {data.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} className="px-4 py-8 text-center text-sm text-muted-foreground">
+                <td
+                  colSpan={columns.length}
+                  className="px-4 py-8 text-center text-sm text-muted-foreground"
+                >
                   {emptyMessage}
                 </td>
               </tr>
@@ -40,11 +54,19 @@ export default function DataTable<T extends { id: string }>({ columns, data, onR
                 <tr
                   key={item.id}
                   onClick={() => onRowClick?.(item)}
-                  className={cn('transition-colors hover:bg-muted/30', onRowClick && 'cursor-pointer')}
+                  className={cn(
+                    'transition-colors hover:bg-muted/30',
+                    onRowClick && 'cursor-pointer'
+                  )}
                 >
                   {columns.map((col) => (
-                    <td key={col.key} className={cn('px-4 py-3 text-sm text-card-foreground', col.className)}>
-                      {col.render ? col.render(item) : (item as Record<string, unknown>)[col.key] as React.ReactNode}
+                    <td
+                      key={col.key}
+                      className={cn('px-4 py-3 text-sm text-card-foreground', col.className)}
+                    >
+                      {col.render
+                        ? col.render(item)
+                        : (item as Record<string, unknown>)[col.key] as React.ReactNode}
                     </td>
                   ))}
                 </tr>

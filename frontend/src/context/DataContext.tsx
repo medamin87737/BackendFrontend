@@ -1,13 +1,5 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react'
 import type { User, Department, Activity, Recommendation, Notification, QuestionCompetence } from '../types'
-import {
-  users as mockUsers,
-  departments as mockDepartments,
-  activities as mockActivities,
-  recommendations as mockRecommendations,
-  notifications as mockNotifications,
-  questionCompetences as mockQuestions,
-} from '../data/mock-data'
 
 interface DataContextType {
   users: User[]
@@ -24,6 +16,7 @@ interface DataContextType {
   deleteDepartment: (id: string) => void
   addActivity: (activity: Activity) => void
   updateActivity: (activity: Activity) => void
+  deleteActivity: (id: string) => void
   updateRecommendation: (rec: Recommendation) => void
   markNotificationRead: (id: string) => void
   getUnreadCount: (userId: string) => number
@@ -34,51 +27,60 @@ interface DataContextType {
 
 const DataContext = createContext<DataContextType | undefined>(undefined)
 
+function mapBackendActivityToUi(a: any): Activity {
+  return {
+    id: a?._id?.toString() ?? a?.id ?? crypto.randomUUID(),
+    title: a?.title ?? '',
+    description: a?.description ?? '',
+    type: a?.type ?? 'training',
+    required_skills: (a?.requiredSkills ?? []).map((s: any) => ({
+      skill_name: s?.skill_name ?? '',
+      desired_level: s?.desired_level ?? 'medium',
+    })),
+    seats: a?.maxParticipants ?? 0,
+    date: a?.startDate ? new Date(a.startDate).toISOString() : new Date().toISOString(),
+    duration: a?.duration ?? 'N/A',
+    location: a?.location ?? 'N/A',
+    priority: a?.priority ?? 'consolidate_medium',
+    status: a?.status ?? 'open',
+    created_by: a?.created_by ?? 'HR',
+    assigned_manager: a?.assigned_manager,
+    created_at: a?.createdAt ?? new Date().toISOString(),
+    updated_at: a?.updatedAt ?? new Date().toISOString(),
+  }
+}
+
 export function DataProvider({ children }: { children: ReactNode }) {
-  const [users, setUsers] = useState<User[]>(mockUsers)
-  const [departments, setDepartments] = useState<Department[]>(mockDepartments)
-  const [activities, setActivities] = useState<Activity[]>(mockActivities)
-  const [recommendations, setRecommendations] = useState<Recommendation[]>(mockRecommendations)
-  const [notifications, setNotifications] = useState<Notification[]>(mockNotifications)
-  const [questionCompetences] = useState<QuestionCompetence[]>(mockQuestions)
+  const [users, setUsers] = useState<User[]>([])
+  const [departments, setDepartments] = useState<Department[]>([])
+  const [activities, setActivities] = useState<Activity[]>([])
+  const [recommendations, setRecommendations] = useState<Recommendation[]>([])
+  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [questionCompetences] = useState<QuestionCompetence[]>([])
 
-  const addUser = useCallback((user: User) => setUsers(prev => [...prev, user]), [])
-  const updateUser = useCallback((user: User) => setUsers(prev => prev.map(u => u.id === user.id ? user : u)), [])
-  const deleteUser = useCallback((id: string) => setUsers(prev => prev.filter(u => u.id !== id)), [])
+  useEffect(() => {
+    fetch('http://localhost:3000/activities')
+      .then(res => res.ok ? res.json() : [])
+      .then(data => setActivities(data.map(mapBackendActivityToUi)))
+      .catch(err => console.error('Erreur fetch activités:', err))
+  }, [])
 
-  const addDepartment = useCallback((dept: Department) => setDepartments(prev => [...prev, dept]), [])
-  const updateDepartment = useCallback((dept: Department) => setDepartments(prev => prev.map(d => d.id === dept.id ? dept : d)), [])
-  const deleteDepartment = useCallback((id: string) => setDepartments(prev => prev.filter(d => d.id !== id)), [])
-
-  const addActivity = useCallback((activity: Activity) => setActivities(prev => [...prev, activity]), [])
-  const updateActivity = useCallback((activity: Activity) => setActivities(prev => prev.map(a => a.id === activity.id ? activity : a)), [])
-
-  const updateRecommendation = useCallback((rec: Recommendation) => setRecommendations(prev => prev.map(r => r.id === rec.id ? rec : r)), [])
-
-  const markNotificationRead = useCallback((id: string) =>
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n)), [])
-
-  const getUnreadCount = useCallback((userId: string) =>
-    notifications.filter(n => n.user_id === userId && !n.read).length, [notifications])
-
-  const getUserNotifications = useCallback((userId: string) =>
-    notifications.filter(n => n.user_id === userId).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()), [notifications])
-
-  const getActivityRecommendations = useCallback((activityId: string) =>
-    recommendations.filter(r => r.activity_id === activityId).sort((a, b) => b.global_score - a.global_score), [recommendations])
-
-  const getDepartmentName = useCallback((id: string) =>
-    departments.find(d => d.id === id)?.name ?? 'N/A', [departments])
+  const addActivity = useCallback((a: Activity) => setActivities(prev => [a, ...prev]), [])
+  const updateActivity = useCallback((a: Activity) => setActivities(prev => prev.map(x => x.id === a.id ? a : x)), [])
+  const deleteActivity = useCallback((id: string) => setActivities(prev => prev.filter(x => x.id !== id)), [])
 
   return (
     <DataContext.Provider value={{
       users, departments, activities, recommendations, notifications, questionCompetences,
-      addUser, updateUser, deleteUser,
-      addDepartment, updateDepartment, deleteDepartment,
-      addActivity, updateActivity,
-      updateRecommendation,
-      markNotificationRead, getUnreadCount, getUserNotifications,
-      getActivityRecommendations, getDepartmentName,
+      addUser: () => {}, updateUser: () => {}, deleteUser: () => {},
+      addDepartment: () => {}, updateDepartment: () => {}, deleteDepartment: () => {},
+      addActivity, updateActivity, deleteActivity,
+      updateRecommendation: () => {},
+      markNotificationRead: () => {},
+      getUnreadCount: () => 0,
+      getUserNotifications: () => [],
+      getActivityRecommendations: () => [],
+      getDepartmentName: () => 'N/A',
     }}>
       {children}
     </DataContext.Provider>
