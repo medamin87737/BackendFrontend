@@ -2,5 +2,6 @@
     "emmet.excludeLanguages": [
         "xsl",
         "xslt"
-    ]
+    ],
+    "kiroAgent.configureMCP": "Disabled"
 }
