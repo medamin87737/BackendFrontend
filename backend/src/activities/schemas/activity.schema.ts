@@ -54,20 +54,14 @@ export class Activity {
   @Prop({ required: true, type: String })
   description: string;
 
-  @Prop({ type: String, enum: ActivityType, required: true })
-  type: ActivityType;
+  @Prop({ required: true })
+  type: string;
 
-  @Prop({ type: Types.ObjectId, ref: 'Department', required: true })
-  departmentId: Types.ObjectId;
+  @Prop({ required: true })
+  departmentId: string;
 
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  createdBy: Types.ObjectId; // HR qui a créé l'activité
-
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  managerId: Types.ObjectId; // Manager responsable
-
-  @Prop({ type: Array, default: [] })
-  requiredSkills: RequiredSkill[];
+  @Prop({ type: [String], default: [] })
+  requiredSkills: string[];
 
   @Prop({ required: true, min: 1 })
   maxParticipants: number;

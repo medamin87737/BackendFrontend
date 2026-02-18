@@ -3,6 +3,7 @@ import { AuthProvider } from './context/AuthContext'
 import { DataProvider } from './context/DataContext'
 import { AccessibilityProvider } from './context/AccessibilityContext'
 import AccessibilityWidget from './components/shared/AccessibilityWidget'
+import { ToastProvider, ToastViewport } from '@/components/ui/toast'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import DashboardLayout from './components/layout/DashboardLayout'
 import LoginPage from './pages/LoginPage'
@@ -43,78 +44,81 @@ export default function App() {
       <AccessibilityProvider>
         <AuthProvider>
           <DataProvider>
-            <Routes>
-              {/* Public */}
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/" element={<Navigate to="/login" replace />} />
+            <ToastProvider>
+              <Routes>
+                {/* Public */}
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/" element={<Navigate to="/login" replace />} />
 
-              {/* Admin routes */}
-              <Route
-                element={
-                  <ProtectedRoute allowedRoles={['ADMIN']}>
-                    <DashboardLayout />
-                  </ProtectedRoute>
-                }
-              >
-                <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                <Route path="/admin/users" element={<AdminUsers />} />
-                <Route path="/admin/departments" element={<AdminDepartments />} />
-                <Route path="/admin/skills" element={<AdminSkills />} />
-                <Route path="/admin/questions" element={<AdminQuestions />} />
-                <Route path="/admin/analytics" element={<AdminAnalytics />} />
-              </Route>
+                {/* Admin routes */}
+                <Route
+                  element={
+                    <ProtectedRoute allowedRoles={['ADMIN']}>
+                      <DashboardLayout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                  <Route path="/admin/users" element={<AdminUsers />} />
+                  <Route path="/admin/departments" element={<AdminDepartments />} />
+                  <Route path="/admin/skills" element={<AdminSkills />} />
+                  <Route path="/admin/questions" element={<AdminQuestions />} />
+                  <Route path="/admin/analytics" element={<AdminAnalytics />} />
+                </Route>
 
-              {/* HR routes */}
-              <Route
-                element={
-                  <ProtectedRoute allowedRoles={['HR']}>
-                    <DashboardLayout />
-                  </ProtectedRoute>
-                }
-              >
-                <Route path="/hr/dashboard" element={<HRDashboard />} />
-                <Route path="/hr/activities" element={<HRActivities />} />
-                <Route path="/hr/create-activity" element={<CreateActivity />} />
-                <Route path="/hr/recommendations/:activityId" element={<HRRecommendations />} />
-                <Route path="/hr/history" element={<HRHistory />} />
-                <Route path="/hr/analytics" element={<HRAnalytics />} />
-              </Route>
+                {/* HR routes */}
+                <Route
+                  element={
+                    <ProtectedRoute allowedRoles={['HR']}>
+                      <DashboardLayout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route path="/hr/dashboard" element={<HRDashboard />} />
+                  <Route path="/hr/activities" element={<HRActivities />} />
+                  <Route path="/hr/create-activity" element={<CreateActivity />} />
+                  <Route path="/hr/recommendations/:activityId" element={<HRRecommendations />} />
+                  <Route path="/hr/history" element={<HRHistory />} />
+                  <Route path="/hr/analytics" element={<HRAnalytics />} />
+                </Route>
 
-              {/* Manager routes */}
-              <Route
-                element={
-                  <ProtectedRoute allowedRoles={['MANAGER']}>
-                    <DashboardLayout />
-                  </ProtectedRoute>
-                }
-              >
-                <Route path="/manager/dashboard" element={<ManagerDashboard />} />
-                <Route path="/manager/activities" element={<ManagerActivities />} />
-                <Route path="/manager/activity/:id" element={<ManagerActivityDetail />} />
-                <Route path="/manager/validations" element={<ManagerValidations />} />
-                <Route path="/manager/history" element={<ManagerHistory />} />
-              </Route>
+                {/* Manager routes */}
+                <Route
+                  element={
+                    <ProtectedRoute allowedRoles={['MANAGER']}>
+                      <DashboardLayout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route path="/manager/dashboard" element={<ManagerDashboard />} />
+                  <Route path="/manager/activities" element={<ManagerActivities />} />
+                  <Route path="/manager/activity/:id" element={<ManagerActivityDetail />} />
+                  <Route path="/manager/validations" element={<ManagerValidations />} />
+                  <Route path="/manager/history" element={<ManagerHistory />} />
+                </Route>
 
-              {/* Employee routes */}
-              <Route
-                element={
-                  <ProtectedRoute allowedRoles={['EMPLOYEE']}>
-                    <DashboardLayout />
-                  </ProtectedRoute>
-                }
-              >
-                <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
-                <Route path="/employee/activities" element={<EmployeeActivities />} />
-                <Route path="/employee/notifications" element={<EmployeeNotifications />} />
-                <Route path="/employee/history" element={<EmployeeHistory />} />
-                <Route path="/employee/profile" element={<EmployeeProfile />} />
-              </Route>
+                {/* Employee routes */}
+                <Route
+                  element={
+                    <ProtectedRoute allowedRoles={['EMPLOYEE']}>
+                      <DashboardLayout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
+                  <Route path="/employee/activities" element={<EmployeeActivities />} />
+                  <Route path="/employee/notifications" element={<EmployeeNotifications />} />
+                  <Route path="/employee/history" element={<EmployeeHistory />} />
+                  <Route path="/employee/profile" element={<EmployeeProfile />} />
+                </Route>
 
-              {/* Catch-all */}
-              <Route path="*" element={<Navigate to="/login" replace />} />
-            </Routes>
+                {/* Catch-all */}
+                <Route path="*" element={<Navigate to="/login" replace />} />
+              </Routes>
 
-            <AccessibilityWidget />
+              <ToastViewport />
+              <AccessibilityWidget />
+            </ToastProvider>
           </DataProvider>
         </AuthProvider>
       </AccessibilityProvider>

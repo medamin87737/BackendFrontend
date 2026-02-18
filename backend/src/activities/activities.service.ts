@@ -26,22 +26,13 @@ export class ActivitiesService {
   }
 
   async findOne(id: string) {
-    const activity = await this.activityModel
-      .findById(id)
-      .populate('departmentId', 'name code')
-      .populate('createdBy', 'name email matricule')
-      .populate('managerId', 'name email matricule');
-    
+    const activity = await this.activityModel.findById(id);
     if (!activity) throw new NotFoundException('Activité non trouvée');
     return activity;
   }
 
   async update(id: string, updateActivityDto: UpdateActivityDto) {
-    const activity = await this.activityModel.findByIdAndUpdate(
-      id,
-      updateActivityDto,
-      { new: true },
-    );
+    const activity = await this.activityModel.findByIdAndUpdate(id, updateActivityDto, { new: true });
     if (!activity) throw new NotFoundException('Activité non trouvée');
     return activity;
   }

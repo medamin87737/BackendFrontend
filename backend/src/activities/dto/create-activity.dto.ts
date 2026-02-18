@@ -1,5 +1,13 @@
 import { Type } from 'class-transformer';
-import { IsString, IsNumber, IsArray, IsDate } from 'class-validator';
+import { IsString, IsNumber, IsArray, IsDate, ValidateNested } from 'class-validator';
+
+export class RequiredSkillDto {
+  @IsString()
+  skill_name: string;
+
+  @IsString()
+  desired_level: string;
+}
 
 export class CreateActivityDto {
   @IsString()
@@ -11,9 +19,13 @@ export class CreateActivityDto {
   @IsString()
   departmentId: string;
 
+  @IsString()
+  type: string;
+
   @IsArray()
-  @IsString({ each: true })
-  requiredSkills: string[];
+  @ValidateNested({ each: true })
+  @Type(() => RequiredSkillDto)
+  requiredSkills: RequiredSkillDto[];
 
   @IsNumber()
   maxParticipants: number;
