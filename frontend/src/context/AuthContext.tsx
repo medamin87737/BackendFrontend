@@ -48,11 +48,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const data = await response.json()
       const backendUser = data.user as any
-      const token = data.token as string | undefined
+      const tokenData = data.token as any
 
       if (!backendUser) {
         return false
       }
+
+      // Extract access_token from token object
+      const token = tokenData?.access_token || tokenData
 
       const mappedUser: User = {
         id: String(backendUser._id ?? backendUser.id ?? ''),

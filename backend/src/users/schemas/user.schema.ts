@@ -59,8 +59,7 @@ export class User {
 export const UserSchema = SchemaFactory.createForClass(User);
 
 // Index pour améliorer les performances de recherche
-UserSchema.index({ email: 1 });
-UserSchema.index({ matricule: 1 });
+// Note: email et matricule ont déjà un index unique via @Prop({ unique: true })
 UserSchema.index({ department_id: 1 });
 UserSchema.index({ manager_id: 1 });
 UserSchema.index({ status: 1 });
