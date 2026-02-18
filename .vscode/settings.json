@@ -3,5 +3,6 @@
         "xsl",
         "xslt"
     ],
-    "kiroAgent.configureMCP": "Disabled"
+    "kiroAgent.configureMCP": "Disabled",
+    "typescript.autoClosingTags": false
 }

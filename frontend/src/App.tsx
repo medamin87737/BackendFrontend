@@ -1,12 +1,13 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { DataProvider } from './context/DataContext'
+import { ManagerProvider } from './context/ManagerContext'
 import { AccessibilityProvider } from './context/AccessibilityContext'
 import AccessibilityWidget from './components/shared/AccessibilityWidget'
-import { ToastProvider, ToastViewport } from '@/components/ui/toast'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import DashboardLayout from './components/layout/DashboardLayout'
 import LoginPage from './pages/LoginPage'
+import { Toaster } from './components/ui/toaster'
 
 // Admin pages
 import AdminDashboard from './pages/admin/AdminDashboard'
@@ -44,7 +45,7 @@ export default function App() {
       <AccessibilityProvider>
         <AuthProvider>
           <DataProvider>
-            <ToastProvider>
+            <ManagerProvider>
               <Routes>
                 {/* Public */}
                 <Route path="/login" element={<LoginPage />} />
@@ -116,9 +117,9 @@ export default function App() {
                 <Route path="*" element={<Navigate to="/login" replace />} />
               </Routes>
 
-              <ToastViewport />
               <AccessibilityWidget />
-            </ToastProvider>
+              <Toaster />
+            </ManagerProvider>
           </DataProvider>
         </AuthProvider>
       </AccessibilityProvider>

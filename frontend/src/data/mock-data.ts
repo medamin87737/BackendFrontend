@@ -63,45 +63,45 @@ export const activities: Activity[] = [
   {
     id: '1', title: 'Formation React Advanced', description: 'Formation avancee en React.js incluant hooks, context API, et patterns avances pour le developpement frontend.', type: 'training',
     required_skills: [
-      { skill_name: 'React Development', type: 'know_how', desired_level: 'high', weight: 0.4 },
-      { skill_name: 'JavaScript', type: 'know_how', desired_level: 'medium', weight: 0.3 },
-      { skill_name: 'Team Collaboration', type: 'soft_skills', desired_level: 'medium', weight: 0.3 },
+      { skill_name: 'React Development', desired_level: 'high' },
+      { skill_name: 'JavaScript', desired_level: 'medium' },
+      { skill_name: 'Team Collaboration', desired_level: 'medium' },
     ],
     seats: 5, date: '2026-03-15', duration: '3 jours', location: 'Siege Tunis', priority: 'consolidate_medium', status: 'open', created_by: '3', assigned_manager: '2', created_at: '2026-01-10', updated_at: '2026-01-10'
   },
   {
     id: '2', title: 'Certification ISO 27001', description: 'Certification en securite de l\'information selon la norme ISO 27001 pour les equipes techniques.', type: 'certification',
     required_skills: [
-      { skill_name: 'Information Security', type: 'knowledge', desired_level: 'expert', weight: 0.5 },
-      { skill_name: 'Risk Assessment', type: 'knowledge', desired_level: 'high', weight: 0.3 },
-      { skill_name: 'Documentation', type: 'know_how', desired_level: 'medium', weight: 0.2 },
+      { skill_name: 'Information Security', desired_level: 'expert' },
+      { skill_name: 'Risk Assessment', desired_level: 'high' },
+      { skill_name: 'Documentation', desired_level: 'medium' },
     ],
     seats: 3, date: '2026-04-20', duration: '5 jours', location: 'Centre Formation Lac', priority: 'exploit_expert', status: 'open', created_by: '3', assigned_manager: '2', created_at: '2026-01-15', updated_at: '2026-01-15'
   },
   {
     id: '3', title: 'Audit Interne Qualite', description: 'Mission d\'audit interne pour evaluer les processus qualite de la branche assurance automobile.', type: 'audit',
     required_skills: [
-      { skill_name: 'Insurance Regulations', type: 'knowledge', desired_level: 'high', weight: 0.4 },
-      { skill_name: 'Analytical Thinking', type: 'soft_skills', desired_level: 'high', weight: 0.3 },
-      { skill_name: 'Report Writing', type: 'know_how', desired_level: 'medium', weight: 0.3 },
+      { skill_name: 'Insurance Regulations', desired_level: 'high' },
+      { skill_name: 'Analytical Thinking', desired_level: 'high' },
+      { skill_name: 'Report Writing', desired_level: 'medium' },
     ],
     seats: 4, date: '2026-05-10', duration: '2 semaines', location: 'Agence Sousse', priority: 'develop_low', status: 'in_progress', created_by: '3', assigned_manager: '6', created_at: '2026-02-01', updated_at: '2026-02-01'
   },
   {
     id: '4', title: 'Projet Digitalisation Sinistres', description: 'Projet de digitalisation du processus de gestion des sinistres pour ameliorer l\'experience client.', type: 'project',
     required_skills: [
-      { skill_name: 'Project Management', type: 'know_how', desired_level: 'high', weight: 0.3 },
-      { skill_name: 'Client Communication', type: 'soft_skills', desired_level: 'high', weight: 0.3 },
-      { skill_name: 'Insurance Knowledge', type: 'knowledge', desired_level: 'medium', weight: 0.4 },
+      { skill_name: 'Project Management', desired_level: 'high' },
+      { skill_name: 'Client Communication', desired_level: 'high' },
+      { skill_name: 'Insurance Knowledge', desired_level: 'medium' },
     ],
     seats: 6, date: '2026-06-01', duration: '3 mois', location: 'Siege Tunis', priority: 'consolidate_medium', status: 'draft', created_by: '3', created_at: '2026-02-10', updated_at: '2026-02-10'
   },
   {
     id: '5', title: 'Mission Evaluation Agences', description: 'Mission d\'evaluation des agences regionales pour optimiser les performances commerciales.', type: 'mission',
     required_skills: [
-      { skill_name: 'Sales Knowledge', type: 'knowledge', desired_level: 'high', weight: 0.4 },
-      { skill_name: 'Leadership', type: 'soft_skills', desired_level: 'expert', weight: 0.3 },
-      { skill_name: 'Data Analysis', type: 'know_how', desired_level: 'medium', weight: 0.3 },
+      { skill_name: 'Sales Knowledge', desired_level: 'high' },
+      { skill_name: 'Leadership', desired_level: 'expert' },
+      { skill_name: 'Data Analysis', desired_level: 'medium' },
     ],
     seats: 2, date: '2026-03-25', duration: '1 semaine', location: 'Agences Regionales', priority: 'exploit_expert', status: 'completed', created_by: '3', assigned_manager: '5', created_at: '2025-12-15', updated_at: '2026-02-01'
   },

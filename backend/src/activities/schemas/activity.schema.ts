@@ -57,11 +57,15 @@ export class Activity {
   @Prop({ required: true })
   type: string;
 
-  @Prop({ required: true })
-  departmentId: string;
+  @Prop({ type: Types.ObjectId, ref: 'Department' })
+  departmentId?: Types.ObjectId;
 
-  @Prop({ type: [String], default: [] })
-  requiredSkills: string[];
+  @Prop({ type: [Object], default: [] })
+  requiredSkills: Array<{
+    skill_name: string;
+    desired_level: string;
+    weight?: number;
+  }>;
 
   @Prop({ required: true, min: 1 })
   maxParticipants: number;
@@ -69,8 +73,8 @@ export class Activity {
   @Prop({ required: true, type: Date })
   startDate: Date;
 
-  @Prop({ required: true, type: Date })
-  endDate: Date;
+  @Prop({ type: Date })
+  endDate?: Date;
 
   @Prop({ maxlength: 255 })
   location?: string;
@@ -83,6 +87,12 @@ export class Activity {
 
   @Prop({ type: Number, default: 0 })
   duration?: number; // Durée en heures
+
+  @Prop({ type: Types.ObjectId, ref: 'User' })
+  managerId?: Types.ObjectId;
+
+  @Prop({ type: Types.ObjectId, ref: 'User' })
+  createdBy?: Types.ObjectId;
 }
 
 export const ActivitySchema = SchemaFactory.createForClass(Activity);

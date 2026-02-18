@@ -49,12 +49,23 @@ export class ActivitiesService {
   // ============ MÉTHODES SPÉCIFIQUES MANAGER ============
 
   async findByManager(managerId: string): Promise<Activity[]> {
-    return this.activityModel
-      .find({ managerId: new Types.ObjectId(managerId) })
+    console.log('🔍 findByManager called with managerId:', managerId);
+    
+    // Convert string to ObjectId
+    const managerObjectId = new Types.ObjectId(managerId);
+    console.log('🔍 Converting to ObjectId:', managerObjectId);
+    
+    const activities = await this.activityModel
+      .find({ managerId: managerObjectId })
       .populate('departmentId', 'name code')
       .populate('createdBy', 'name email')
+      .populate('managerId', 'name email')
       .sort({ startDate: -1 })
       .exec();
+    
+    console.log('🔍 Found activities:', activities.length);
+    console.log('🔍 Activities:', JSON.stringify(activities, null, 2));
+    return activities;
   }
 
   async findPendingForManager(managerId: string): Promise<Activity[]> {
@@ -69,10 +80,13 @@ export class ActivitiesService {
       .exec();
   }
 
-  async forwardToManager(activityId: string): Promise<Activity> {
+  async forwardToManager(activityId: string, managerId: string): Promise<Activity> {
     const activity = await this.activityModel.findByIdAndUpdate(
       activityId,
-      { status: ActivityStatus.IN_PROGRESS },
+      { 
+        status: ActivityStatus.IN_PROGRESS,
+        managerId: new Types.ObjectId(managerId)
+      },
       { new: true },
     );
 

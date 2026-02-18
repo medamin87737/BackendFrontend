@@ -1,14 +1,18 @@
 import { Link } from 'react-router-dom'
-import { useData } from '../../context/DataContext'
-import { useAuth } from '../../context/AuthContext'
+import { useManager } from '../../context/ManagerContext'
 import StatusBadge from '../../components/shared/StatusBadge'
-import { Calendar, MapPin, Users, ArrowRight } from 'lucide-react'
+import { Calendar, MapPin, Users, ArrowRight, Loader2 } from 'lucide-react'
 
 export default function ManagerActivities() {
-  const { activities } = useData()
-  const { user } = useAuth()
+  const { myActivities, loadingActivities } = useManager()
 
-  const myActivities = activities.filter(a => a.assigned_manager === user?.id)
+  if (loadingActivities) {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -24,7 +28,7 @@ export default function ManagerActivities() {
           </div>
         ) : (
           myActivities.map(a => (
-            <div key={a.id} className="rounded-xl border border-border bg-card p-5 transition-shadow hover:shadow-md">
+            <div key={a._id} className="rounded-xl border border-border bg-card p-5 transition-shadow hover:shadow-md">
               <div className="flex items-start justify-between">
                 <div className="flex flex-col gap-1">
                   <h3 className="text-sm font-semibold text-card-foreground">{a.title}</h3>
@@ -33,16 +37,22 @@ export default function ManagerActivities() {
                 <StatusBadge status={a.status} />
               </div>
               <div className="mt-3 flex flex-wrap items-center gap-4">
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground"><Calendar className="h-3.5 w-3.5" /> {a.date}</div>
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground"><MapPin className="h-3.5 w-3.5" /> {a.location}</div>
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground"><Users className="h-3.5 w-3.5" /> {a.seats} places</div>
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Calendar className="h-3.5 w-3.5" /> {new Date(a.startDate).toLocaleDateString('fr-FR')}
+                </div>
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <MapPin className="h-3.5 w-3.5" /> {a.location}
+                </div>
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Users className="h-3.5 w-3.5" /> {a.maxParticipants} places
+                </div>
               </div>
               <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
                 <div className="flex gap-2">
                   <StatusBadge status={a.type} />
                   <StatusBadge status={a.priority} />
                 </div>
-                <Link to={`/manager/activity/${a.id}`} className="flex items-center gap-1 text-xs font-medium text-primary hover:underline">
+                <Link to={`/manager/activity/${a._id}`} className="flex items-center gap-1 text-xs font-medium text-primary hover:underline">
                   Details <ArrowRight className="h-3 w-3" />
                 </Link>
               </div>

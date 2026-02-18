@@ -39,14 +39,17 @@ export class ActivitiesController {
   @Get('my-activities')
   @Roles('MANAGER')
   async findMyActivities(@Request() req) {
-    const managerId = req.user.userId;
+    // Le JWT strategy retourne { userId: payload.sub, role: payload.role }
+    const managerId = req.user.userId || req.user.sub;
+    console.log('🔍 Controller - req.user:', req.user);
+    console.log('🔍 Controller - managerId:', managerId);
     return this.activitiesService.findByManager(managerId);
   }
 
   @Get('pending')
   @Roles('MANAGER')
   async findPendingActivities(@Request() req) {
-    const managerId = req.user.userId;
+    const managerId = req.user.userId || req.user.sub;
     return this.activitiesService.findPendingForManager(managerId);
   }
 
@@ -76,8 +79,8 @@ export class ActivitiesController {
 
   @Patch(':id/forward')
   @Roles('HR')
-  async forwardToManager(@Param('id') id: string) {
-    return this.activitiesService.forwardToManager(id);
+  async forwardToManager(@Param('id') id: string, @Body('managerId') managerId: string) {
+    return this.activitiesService.forwardToManager(id, managerId);
   }
 
   @Patch(':id/status')

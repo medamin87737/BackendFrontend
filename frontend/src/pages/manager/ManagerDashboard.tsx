@@ -1,17 +1,24 @@
 import { Link } from 'react-router-dom'
-import { useData } from '../../context/DataContext'
 import { useAuth } from '../../context/AuthContext'
+import { useManager } from '../../context/ManagerContext'
 import StatCard from '../../components/shared/StatCard'
 import StatusBadge from '../../components/shared/StatusBadge'
-import { ClipboardList, Users, CheckCircle, Clock, ArrowRight } from 'lucide-react'
+import { ClipboardList, Users, CheckCircle, Clock, ArrowRight, Loader2 } from 'lucide-react'
 
 export default function ManagerDashboard() {
-  const { activities, recommendations, users, getUnreadCount } = useData()
   const { user } = useAuth()
+  const { myActivities, pendingActivities, unreadCount, loadingActivities } = useManager()
 
-  const myActivities = activities.filter(a => a.assigned_manager === user?.id)
-  const pendingValidations = myActivities.filter(a => a.status === 'in_progress' || a.status === 'open')
-  const myTeam = users.filter(u => u.manager_id === user?.id)
+  const pendingValidations = pendingActivities.length
+  const myTeam: any[] = [] // TODO: Implement team members API
+
+  if (loadingActivities) {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -22,9 +29,9 @@ export default function ManagerDashboard() {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard title="Mes activites" value={myActivities.length} icon={<ClipboardList className="h-5 w-5" />} />
-        <StatCard title="Validations en attente" value={pendingValidations.length} icon={<Clock className="h-5 w-5" />} />
+        <StatCard title="Validations en attente" value={pendingValidations} icon={<Clock className="h-5 w-5" />} />
         <StatCard title="Mon equipe" value={myTeam.length} icon={<Users className="h-5 w-5" />} />
-        <StatCard title="Notifications" value={user ? getUnreadCount(user.id) : 0} icon={<CheckCircle className="h-5 w-5" />} />
+        <StatCard title="Notifications" value={unreadCount} icon={<CheckCircle className="h-5 w-5" />} />
       </div>
 
       {/* Team members */}
@@ -40,7 +47,7 @@ export default function ManagerDashboard() {
               <div key={member.id} className="flex items-center justify-between px-5 py-3">
                 <div className="flex items-center gap-3">
                   <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
-                    {member.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                    {member.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
                   </div>
                   <div className="flex flex-col">
                     <span className="text-sm font-medium text-card-foreground">{member.name}</span>
@@ -69,15 +76,17 @@ export default function ManagerDashboard() {
           {myActivities.length === 0 ? (
             <p className="px-5 py-6 text-center text-sm text-muted-foreground">Aucune activite assignee</p>
           ) : (
-            myActivities.map(a => (
-              <div key={a.id} className="flex items-center justify-between px-5 py-3">
+            myActivities.slice(0, 5).map(a => (
+              <div key={a._id} className="flex items-center justify-between px-5 py-3">
                 <div className="flex flex-col gap-0.5">
                   <span className="text-sm font-medium text-card-foreground">{a.title}</span>
-                  <span className="text-xs text-muted-foreground">{a.date} - {a.seats} places</span>
+                  <span className="text-xs text-muted-foreground">
+                    {new Date(a.startDate).toLocaleDateString('fr-FR')} - {a.maxParticipants} places
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <StatusBadge status={a.status} />
-                  <Link to={`/manager/activity/${a.id}`} className="text-xs font-medium text-primary hover:underline">Voir</Link>
+                  <Link to={`/manager/activity/${a._id}`} className="text-xs font-medium text-primary hover:underline">Voir</Link>
                 </div>
               </div>
             ))

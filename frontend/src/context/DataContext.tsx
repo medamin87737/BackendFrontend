@@ -59,10 +59,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [questionCompetences] = useState<QuestionCompetence[]>([])
 
   useEffect(() => {
-    fetch('http://localhost:3000/activities')
-      .then(res => res.ok ? res.json() : [])
-      .then(data => setActivities(data.map(mapBackendActivityToUi)))
-      .catch(err => console.error('Erreur fetch activités:', err))
+    // Skip fetching activities here - they will be loaded by role-specific contexts
+    // (ManagerContext, HRContext, etc.) with proper authentication
+    // This prevents 403 errors on initial load
   }, [])
 
   const addActivity = useCallback((a: Activity) => setActivities(prev => [a, ...prev]), [])
